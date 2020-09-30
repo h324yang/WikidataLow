@@ -1,5 +1,6 @@
 from bson.json_util import dumps, loads
 from sklearn.model_selection import train_test_split
+import os
 
 
 def load_entities_from_jsonl(fpath):
@@ -63,3 +64,79 @@ def load_triples(fpath):
                 triple = tuple(line.strip().split("\t"))
                 triples.append(triple)
     return triples
+
+
+def count_lines_from_file(fpath):
+    cnt = 0
+    with open(os.path.join(fpath)) as f:
+        for line in f: cnt += 1
+    return cnt
+
+
+def count_rels_from_triples(fpath):
+    rels = set()
+    for s, p, o in load_triples(fpath):
+        rels.add(p)
+    return len(rels)
+
+
+def count_attributes(fpath):
+    attrs = set()
+    for ent, ent_attrs in load_attributes(fpath).items():
+        attrs.update(set(ent_attrs))
+    return len(attrs)
+
+
+def count_attribute_triples(fpath):
+    cnt = 0
+    for ent, ent_attrs in load_attributes(fpath).items():
+        cnt += len(ent_attrs)
+    return cnt
+
+
+class Stats:
+    def __init__(self, data_dir):
+        self.data_dir = data_dir
+              
+    def analyze(self):
+        funcs = [attr for attr in dir(self) if attr.startswith("get")]
+        record_1 = {"data_dir": self.data_dir, "lang": 1}
+        record_2 = {"data_dir": self.data_dir, "lang": 2}
+        for func in funcs:
+            this_func = getattr(self, func)
+            cnt_1, cnt_2 = this_func()
+            record_1[func[4:]] = cnt_1
+            record_2[func[4:]] = cnt_2
+        return record_1, record_2
+                      
+    def get_num_entities(self):
+        cnt_1 = count_lines_from_file(os.path.join(self.data_dir, "ent_ids_1"))
+        cnt_2 = count_lines_from_file(os.path.join(self.data_dir, "ent_ids_2"))
+        return cnt_1, cnt_2
+    
+    def get_num_relations(self):
+        cnt_1 = count_rels_from_triples(os.path.join(self.data_dir, "triples_1"))
+        cnt_2 = count_rels_from_triples(os.path.join(self.data_dir, "triples_2"))
+        return cnt_1, cnt_2
+
+    def get_num_attributes(self):
+        cnt_1 = count_attributes(os.path.join(self.data_dir, "training_attrs_1"))
+        cnt_2 = count_attributes(os.path.join(self.data_dir, "training_attrs_2"))
+        return cnt_1, cnt_2
+
+    def get_num_relation_triples(self):
+        cnt_1 = count_lines_from_file(os.path.join(self.data_dir, "triples_1"))
+        cnt_2 = count_lines_from_file(os.path.join(self.data_dir, "triples_2"))
+        return cnt_1, cnt_2    
+              
+    def get_num_attribute_triples(self):
+        fpath_1 = os.path.join(self.data_dir, "training_attrs_1")
+        fpath_2 = os.path.join(self.data_dir, "training_attrs_2")
+        cnt_1 = count_attribute_triples(fpath_1)
+        cnt_2 = count_attribute_triples(fpath_2)
+        return cnt_1, cnt_2
+              
+    def get_num_descriptions(self):
+        cnt_1 = count_lines_from_file(os.path.join(self.data_dir, "comment_1"))
+        cnt_2 = count_lines_from_file(os.path.join(self.data_dir, "comment_2"))
+        return cnt_1, cnt_2  
