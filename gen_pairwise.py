@@ -53,25 +53,32 @@ def main():
             desc = []
             for ent, idx in lang_ent_ids.items():
                 if lang == "zh_yue":
+                    cur_label = None
+                    for yue in ["zh-yue", "yue", "zh-hk"]:
+                        cur_label = lang_checker.extract_label_from_lang(ent, yue)
+                        if cur_label: break
+                    
                     cur_desc = None
                     for yue in ["zh-yue", "yue", "zh-hk"]:
                         cur_desc = lang_checker.extract_desc_from_lang(ent, yue)
                         if cur_desc: break
                             
                 else:
+                    cur_label = lang_checker.extract_label_from_lang(ent, lang)
                     cur_desc = lang_checker.extract_desc_from_lang(ent, lang)
                     
-                if cur_desc:
-                    desc.append(f"{idx}\t{cur_desc}")
+                if cur_label or cur_desc:
+                    desc.append(f"{idx}\t{cur_label}: {cur_desc}")
 
             f.write('\n'.join(desc))
             
         with open(os.path.join(lang_dir, "comment_2"), "w") as f:
             desc = []
             for ent, idx in en_ent_ids.items():
+                cur_label = lang_checker.extract_label_from_lang(ent, "en")
                 cur_desc = lang_checker.extract_desc_from_lang(ent, "en")
-                if cur_desc:
-                    desc.append(f"{idx}\t{cur_desc}")
+                if cur_label or cur_desc:
+                    desc.append(f"{idx}\t{cur_label}: {cur_desc}")
             f.write('\n'.join(desc))
         
         # indexed triples

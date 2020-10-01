@@ -95,5 +95,13 @@ class LangChecker:
             return desc[lang]['value']
         else:
             return None
+        
+    def extract_label_from_lang(self, ent_id, lang):
+        label = self.ents[ent_id]['labels']
+        if lang in label:
+            return label[lang]['value']
+        else:
+            return None
+
 
         
