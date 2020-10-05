@@ -1,4 +1,5 @@
 def get_ent_and_prop_ids(triples, seed_ents=None):
+    # set seed_ents because some seeds are not used in triples
     ent_ids = set()
     prop_ids = set()
     for s, p, o in triples:
@@ -17,7 +18,7 @@ def get_ent_and_prop_ids(triples, seed_ents=None):
 
 
 def collect_one_hop(seed_entities):
-    """ get one-hop lang-independent neighborghs
+    """ Get one-hop lang-independent neighborghs
     """
     triples = []
     attributes = {}

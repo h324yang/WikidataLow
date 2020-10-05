@@ -1,6 +1,28 @@
 from bson.json_util import dumps, loads
 from sklearn.model_selection import train_test_split
 import os
+import time
+
+def load_seed_ids_from_txt(fpath):
+    seeds = {}
+    with open(fpath) as f:
+        for line in f:
+            if line:
+                eid, en_exists = line.strip().split()
+                seeds[eid] = int(en_exists)
+    return seeds
+
+
+def collect_all_seeds(seed_path_map):
+    all_seeds = {'en':dict()}
+    for lang, fpath in seed_path_map.items():
+        lang_seeds = load_seed_ids_from_txt(fpath)
+        all_seeds[lang] = lang_seeds
+        # EN seeds are the union of ILLs to EN across all langs
+        for eid, en_exists in lang_seeds.items():
+            if en_exists:
+                all_seeds['en'][eid] = 1
+    return all_seeds
 
 
 def load_entities_from_jsonl(fpath):
@@ -37,20 +59,25 @@ class Timer:
         self.last = cur
         return delta
     
+    def elapsed(self):
+        cur = time.time()
+        delta = cur - self.start
+        return delta
+    
 
 def train_dev_test_split(ent_ids, train_test_ratio=0.7, train_dev_ratio=0.9):
     train, test, _, _ = train_test_split(
         ent_ids, 
         [1]*len(ent_ids), 
         train_size=train_test_ratio, 
-        test_size=(1. - train_test_ratio)
+        test_size=round(1. - train_test_ratio, 3)
     )
     
     train, dev, _, _ = train_test_split(
         train, 
         [1]*len(train), 
         train_size=train_dev_ratio, 
-        test_size=(1 - train_dev_ratio)
+        test_size=round(1 - train_dev_ratio, 3)
     )
     
     return train, dev, test
