@@ -103,6 +103,13 @@ class LangChecker:
             return label[lang]['value']
         else:
             return None
+        
+    def extract_title_from_lang(self, ent_id, lang):
+        sitelinks = self.ents[ent_id]['sitelinks']
+        if lang in sitelinks:
+            return sitelinks[lang]['title']
+        else:
+            return None
 
 
         

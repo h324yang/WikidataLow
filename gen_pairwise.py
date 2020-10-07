@@ -56,33 +56,30 @@ def main():
         with open(os.path.join(lang_dir, "comment_1"), "w") as f:
             desc = []
             for ent, idx in lang_ent_ids.items():
-                if lang == "zh_yue":
-                    cur_label = None
-                    for yue in ["zh-yue", "yue", "zh-hk"]:
-                        cur_label = lang_checker.extract_label_from_lang(ent, yue)
-                        if cur_label: break
-                    
+                cur_title = lang_checker.extract_title_from_lang(ent, f"{lang}wiki")
+
+                if lang == "zh_yue":     
                     cur_desc = None
                     for yue in ["zh-yue", "yue", "zh-hk"]:
                         cur_desc = lang_checker.extract_desc_from_lang(ent, yue)
                         if cur_desc: break
                             
                 else:
-                    cur_label = lang_checker.extract_label_from_lang(ent, lang)
+                    cur_title = lang_checker.extract_title_from_lang(ent, f"{lang}wiki")
                     cur_desc = lang_checker.extract_desc_from_lang(ent, lang)
                     
-                if cur_label or cur_desc:
-                    desc.append(f"{idx}\t{cur_label}: {cur_desc}")
+                if cur_title or cur_desc:
+                    desc.append(f"{idx}\t{cur_title}: {cur_desc}")
 
             f.write('\n'.join(desc))
             
         with open(os.path.join(lang_dir, "comment_2"), "w") as f:
             desc = []
             for ent, idx in en_ent_ids.items():
-                cur_label = lang_checker.extract_label_from_lang(ent, "en")
+                cur_title = lang_checker.extract_title_from_lang(ent, "enwiki")
                 cur_desc = lang_checker.extract_desc_from_lang(ent, "en")
-                if cur_label or cur_desc:
-                    desc.append(f"{idx}\t{cur_label}: {cur_desc}")
+                if cur_title or cur_desc:
+                    desc.append(f"{idx+offset}\t{cur_title}: {cur_desc}")
             f.write('\n'.join(desc))
         
         # indexed triples (properties are shared)

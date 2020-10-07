@@ -3,6 +3,26 @@ from sklearn.model_selection import train_test_split
 import os
 import time
 
+
+def load_descriptions(fpath):
+    descriptions = {}
+    with open(fpath) as f:
+        for line in f:
+            doc = line.strip().split("\t")
+            if doc:
+                descriptions[doc[0]] = doc[1]
+    return descriptions
+
+
+def load_refs_from_txt(fpath):
+    refs = []
+    with open(fpath) as f:
+        for line in f:
+            if line.strip():
+                refs.append(line.strip().split())
+    return refs
+
+
 def load_seed_ids_from_txt(fpath):
     seeds = {}
     with open(fpath) as f:
