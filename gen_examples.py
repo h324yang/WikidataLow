@@ -47,15 +47,15 @@ def main():
                     
                     examples.append(example)
                     
-        random.shuffle(examples)
-        opath = f"{lang}_en.triples.text.jsonl"
-        with open(os.path.join(OUTPUT_DIR, opath), "w") as f:
-            last = len(examples)
-            for i, example in enumerate(examples):
-                if (i + 1) == last:
-                    f.write(json.dumps(example))
-                else:
-                    f.write(json.dumps(example)+"\n")
+            random.shuffle(examples)
+            opath = f"{lang}_en.triples.text.{split}.jsonl"
+            with open(os.path.join(OUTPUT_DIR, opath), "w") as f:
+                last = len(examples)
+                for i, example in enumerate(examples):
+                    if (i + 1) == last:
+                        f.write(json.dumps(example))
+                    else:
+                        f.write(json.dumps(example)+"\n")
                     
 
 if __name__ == "__main__":
