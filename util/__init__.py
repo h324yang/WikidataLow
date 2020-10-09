@@ -2,8 +2,19 @@ from bson.json_util import dumps, loads
 from sklearn.model_selection import train_test_split
 import os
 import time
+import json
 
 
+def write_jsonl(examples, fpath):
+    with open(fpath, "w") as f:
+        last = len(examples)
+        for i, example in enumerate(examples):
+            if (i + 1) == last:
+                f.write(json.dumps(example))
+            else:
+                f.write(json.dumps(example)+"\n")
+
+                
 def load_descriptions(fpath):
     descriptions = {}
     with open(fpath) as f:
